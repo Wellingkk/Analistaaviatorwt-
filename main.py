@@ -20,7 +20,7 @@ def run_server():
 
 threading.Thread(target=run_server, daemon=True).start()
 
-# --- Seu Código do Robô ---
+# --- Configuração do Robô ---
 TOKEN = os.environ.get("TOKEN")
 CHAT_ID = "@canaldowt"
 
@@ -28,6 +28,8 @@ chrome_options = Options()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--disable-gpu')
+chrome_options.binary_location = "/usr/bin/chromium"
 
 print("🕵️ Inicializando robô...")
 driver = webdriver.Chrome(options=chrome_options)
@@ -39,12 +41,14 @@ while True:
     try:
         elementos = driver.find_elements(By.CSS_SELECTOR, ".bubble-multiplier")
         if elementos:
-            vela_atual = float(elementos[0].text.replace('x', ''))
+            texto = elementos[0].text.replace('x', '')
+            vela_atual = float(texto)
             if vela_atual != ultima_vela:
                 print(f"🎰 Vela: {vela_atual}x")
                 ultima_vela = vela_atual
-                if vela_atual >= 1.7: # Exemplo de verificação
+                if vela_atual >= 1.7:
                     requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", 
                                   data={"chat_id": CHAT_ID, "text": f"🚨 Vela {vela_atual}x detectada!"})
-    except: pass
+    except Exception as e:
+        pass
     time.sleep(2)
