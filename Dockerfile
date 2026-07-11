@@ -1,24 +1,15 @@
 FROM python:3.9-slim
 
-# Instala dependências do sistema
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    unzip \
-    chromium \
-    chromium-driver \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
-# Copia explicitamente o arquivo requirements
-COPY requirements.txt .
+# Instala apenas o essencial para rodar o Python
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instala as bibliotecas de forma forçada
-RUN pip install --upgrade pip
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o resto
 COPY . .
 
 CMD ["python", "main.py"]
