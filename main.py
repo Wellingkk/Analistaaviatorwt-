@@ -32,7 +32,9 @@ chrome_options.add_argument('--disable-gpu')
 chrome_options.binary_location = "/usr/bin/chromium"
 
 print("🕵️ Inicializando robô...")
+# Aqui tentamos rodar o driver sem baixar nada novo
 driver = webdriver.Chrome(options=chrome_options)
+
 driver.get("https://apostatudo.com/casino/game/spribe-aviator")
 time.sleep(10)
 
@@ -50,5 +52,5 @@ while True:
                     requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", 
                                   data={"chat_id": CHAT_ID, "text": f"🚨 Vela {vela_atual}x detectada!"})
     except Exception as e:
-        pass
+        print(f"Erro: {e}")
     time.sleep(2)
