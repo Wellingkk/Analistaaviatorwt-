@@ -1,10 +1,12 @@
 import time
 import requests
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-TOKEN = "8952208320:AAFRmo8v5xk7GlnPm8qTd7WzQQPAnE2Y6QI"
+# Usa o token como variável de ambiente (mais seguro)
+TOKEN = os.environ.get("TOKEN")
 CHAT_ID = "@canaldowt"
 
 chrome_options = Options()
@@ -12,6 +14,7 @@ chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument('--disable-gpu')
+chrome_options.binary_location = "/usr/bin/chromium"
 
 print("🕵️ Inicializando navegador virtual no servidor...")
 try:
@@ -20,7 +23,7 @@ try:
     url_jogo = "https://apostatudo.com/casino/game/spribe-aviator"
     print(f"🔗 Acessando: {url_jogo}")
     driver.get(url_jogo)
-    time.sleep(5) 
+    time.sleep(10) 
 
     print("👀 Monitorando as rodadas reais...")
     velas_alvo = [1.06, 1.07, 1.09]
