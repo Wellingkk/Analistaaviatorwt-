@@ -1,18 +1,15 @@
-import time
 import requests
+import time
 import os
-import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
+import threading
 
-# --- Servidor para manter o Render "feliz" ---
+# Servidor para o Render
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(b"Bot is running!")
+        self.wfile.write(b"Bot is active")
 
 def run_server():
     server = HTTPServer(('0.0.0.0', int(os.environ.get("PORT", 8080))), SimpleHandler)
@@ -20,37 +17,30 @@ def run_server():
 
 threading.Thread(target=run_server, daemon=True).start()
 
-# --- Configuração do Robô ---
+# Lógica do Robô
 TOKEN = os.environ.get("TOKEN")
 CHAT_ID = "@canaldowt"
 
-chrome_options = Options()
-chrome_options.add_argument('--headless')
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--disable-dev-shm-usage')
-chrome_options.add_argument('--disable-gpu')
-chrome_options.binary_location = "/usr/bin/chromium"
+print("🚀 Robô iniciado com sucesso (Método Rápido)!")
 
-print("🕵️ Inicializando robô...")
-# Aqui tentamos rodar o driver sem baixar nada novo
-driver = webdriver.Chrome(options=chrome_options)
-
-driver.get("https://apostatudo.com/casino/game/spribe-aviator")
-time.sleep(10)
-
-ultima_vela = None
 while True:
     try:
-        elementos = driver.find_elements(By.CSS_SELECTOR, ".bubble-multiplier")
-        if elementos:
-            texto = elementos[0].text.replace('x', '')
-            vela_atual = float(texto)
-            if vela_atual != ultima_vela:
-                print(f"🎰 Vela: {vela_atual}x")
-                ultima_vela = vela_atual
-                if vela_atual >= 1.7:
+        # A API oficial do histórico do jogo
+        url = "https://aviator.spribe.services/api/v1/history/aviator"
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code == 200:
+            dados = response.json()
+            if dados:
+                ultima_vela = float(dados[0]['game_result'])
+                print(f"🎰 Última vela: {ultima_vela}x")
+                
+                if ultima_vela >= 1.7:
+                    mensagem = f"🚨 **Sinal Detectado!**\n\n📊 Vela anterior: {ultima_vela}x"
                     requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", 
-                                  data={"chat_id": CHAT_ID, "text": f"🚨 Vela {vela_atual}x detectada!"})
+                                  data={"chat_id": CHAT_ID, "text": mensagem})
+        
     except Exception as e:
-        print(f"Erro: {e}")
-    time.sleep(2)
+        print(f"Aguardando dados... (Erro: {e})")
+    
+    time.sleep(5)
