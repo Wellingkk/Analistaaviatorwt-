@@ -1,10 +1,15 @@
-FROM python:3.10-slim
+# Usa uma imagem oficial do Python
+FROM python:3.9-slim
 
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Instala apenas as bibliotecas básicas
-RUN pip install --no-cache-dir requests python-telegram-bot
+# Copia o arquivo de dependências e instala
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py .
+# Copia o restante do código
+COPY . .
 
-CMD ["python", "-u", "main.py"]
+# Comando para rodar sua aplicação
+CMD ["python", "main.py"]
