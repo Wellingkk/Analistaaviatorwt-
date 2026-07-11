@@ -17,28 +17,28 @@ def run_server():
 
 threading.Thread(target=run_server, daemon=True).start()
 
-print("🚀 Robô iniciado com sucesso (Sem Selenium)!")
+TOKEN = os.environ.get("TOKEN")
+CHAT_ID = "@canaldowt"
+
+print("🚀 Robô iniciado (Modo Requisição Direta)!")
+
+# Cabeçalho para fingir ser um navegador real
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+}
 
 while True:
     try:
-        # A API retorna o histórico
-        url = "https://aviator.spribe.services/api/v1/history/aviator"
-        response = requests.get(url, timeout=10)
+        # Tenta acessar o site principal (às vezes o DNS do Render tem problemas com subdomínios de API)
+        response = requests.get("https://apostatudo.com/casino/game/spribe-aviator", headers=headers, timeout=15)
         
         if response.status_code == 200:
-            dados = response.json()
-            if dados:
-                ultima_vela = float(dados[0]['game_result'])
-                print(f"🎰 Última vela: {ultima_vela}x")
-                
-                # A lógica de envio para o Telegram
-                token = os.environ.get("TOKEN")
-                chat_id = "@canaldowt"
-                if ultima_vela >= 1.7:
-                    requests.post(f"https://api.telegram.org/bot{token}/sendMessage", 
-                                  data={"chat_id": chat_id, "text": f"🚨 Vela {ultima_vela}x detectada!"})
-        
+            print("✅ Site acessado. Verificando dados...")
+            # Aqui entraríamos na lógica de extração se o site retornar os dados no HTML
+        else:
+            print(f"❌ Erro ao acessar: {response.status_code}")
+            
     except Exception as e:
-        print(f"Aguardando dados... (Erro: {e})")
+        print(f"Aguardando... (Erro de conexão: {e})")
     
-    time.sleep(10)
+    time.sleep(15)
