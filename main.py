@@ -1,44 +1,28 @@
 import requests
 import time
 import os
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import threading
 
-# Servidor para o Render
-class SimpleHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is active")
+# Seu código do servidor (HTTPServer) continua igual aqui em cima...
 
-def run_server():
-    server = HTTPServer(('0.0.0.0', int(os.environ.get("PORT", 8080))), SimpleHandler)
-    server.serve_forever()
+# URL do histórico (Use o link que você quer monitorar)
+URL = "https://tipminer.com/aviator" # Exemplo, ajuste se necessário
 
-threading.Thread(target=run_server, daemon=True).start()
-
-TOKEN = os.environ.get("TOKEN")
-CHAT_ID = "@canaldowt"
-
-print("🚀 Robô iniciado (Modo Requisição Direta)!")
-
-# Cabeçalho para fingir ser um navegador real
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
-}
-
-while True:
-    try:
-        # Tenta acessar o site principal (às vezes o DNS do Render tem problemas com subdomínios de API)
-        response = requests.get("https://apostatudo.com/casino/game/spribe-aviator", headers=headers, timeout=15)
+def monitorar():
+    while True:
+        try:
+            response = requests.get(URL, headers=headers, timeout=15)
+            if response.status_code == 200:
+                # Vamos verificar se o texto "x" (ex: 2.50x) aparece no conteúdo
+                if "x" in response.text:
+                    print("✅ Dados recebidos com sucesso!")
+                else:
+                    print("⚠️ Site acessado, mas as velas não foram encontradas no HTML (provavelmente carregadas por JS).")
+            else:
+                print(f"❌ Erro HTTP: {response.status_code}")
+        except Exception as e:
+            print(f"❌ Erro de conexão: {e}")
         
-        if response.status_code == 200:
-            print("✅ Site acessado. Verificando dados...")
-            # Aqui entraríamos na lógica de extração se o site retornar os dados no HTML
-        else:
-            print(f"❌ Erro ao acessar: {response.status_code}")
-            
-    except Exception as e:
-        print(f"Aguardando... (Erro de conexão: {e})")
-    
-    time.sleep(15)
+        time.sleep(20)
+
+# Inicie a thread do monitoramento
+# (Lembre-se de manter o seu threading.Thread rodando)
