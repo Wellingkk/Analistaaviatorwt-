@@ -4,7 +4,6 @@ import os
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-# Servidor simples para manter o Render ligado
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -17,7 +16,6 @@ def run_server():
 
 threading.Thread(target=run_server, daemon=True).start()
 
-# Monitoramento
 URL = "https://tipminer.com/aviator"
 headers = {"User-Agent": "Mozilla/5.0"}
 
@@ -28,8 +26,6 @@ while True:
         response = requests.get(URL, headers=headers, timeout=15)
         if response.status_code == 200:
             print("✅ Site acessado com sucesso.")
-            # Aqui no log do Render, veja o que aparece:
-            # Se não aparecer os números, o site usa uma API separada.
         else:
             print(f"❌ Erro HTTP: {response.status_code}")
     except Exception as e:
