@@ -10,6 +10,7 @@ CHAT_ID = "5805588750"
 
 bot = telebot.TeleBot(TOKEN)
 
+# Servidor para manter o Render online
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -24,20 +25,21 @@ def run_server():
 threading.Thread(target=run_server, daemon=True).start()
 
 scraper = cloudscraper.create_scraper()
-URL = "https://sorte.blackaviator.app/"
 
-print("🚀 Bot iniciado!")
+# Vamos tentar acessar uma rota comum de API que esses sites usam
+# Muitas vezes os sinais ficam em /api/signals ou /api/data
+URL_API = "https://sorte.blackaviator.app/api/signals"
+
+print("🚀 Buscando sinais na API...")
 
 while True:
     try:
-        response = scraper.get(URL, timeout=15)
+        response = scraper.get(URL_API, timeout=10)
         if response.status_code == 200:
-            # Pega os primeiros 800 caracteres para eu analisar a estrutura
-            conteudo = response.text[:800]
-            bot.send_message(CHAT_ID, f"🔍 Conteúdo recebido:\n\n{conteudo}")
+            bot.send_message(CHAT_ID, f"🔍 API respondeu: {response.text[:500]}")
         else:
-            bot.send_message(CHAT_ID, f"❌ Erro: {response.status_code}")
+            bot.send_message(CHAT_ID, f"⚠️ A página principal carrega, mas a API retornou erro: {response.status_code}")
     except Exception as e:
-        bot.send_message(CHAT_ID, f"❌ Erro: {str(e)[:50]}")
+        bot.send_message(CHAT_ID, f"❌ Erro na busca: {str(e)[:50]}")
     
     time.sleep(60)
