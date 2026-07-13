@@ -1,28 +1,38 @@
 import requests
 import time
 import os
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-# Seu código do servidor (HTTPServer) continua igual aqui em cima...
+# Servidor simples para manter o Render ligado
+class SimpleHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is active")
 
-# URL do histórico (Use o link que você quer monitorar)
-URL = "https://tipminer.com/aviator" # Exemplo, ajuste se necessário
+def run_server():
+    server = HTTPServer(('0.0.0.0', int(os.environ.get("PORT", 8080))), SimpleHandler)
+    server.serve_forever()
 
-def monitorar():
-    while True:
-        try:
-            response = requests.get(URL, headers=headers, timeout=15)
-            if response.status_code == 200:
-                # Vamos verificar se o texto "x" (ex: 2.50x) aparece no conteúdo
-                if "x" in response.text:
-                    print("✅ Dados recebidos com sucesso!")
-                else:
-                    print("⚠️ Site acessado, mas as velas não foram encontradas no HTML (provavelmente carregadas por JS).")
-            else:
-                print(f"❌ Erro HTTP: {response.status_code}")
-        except Exception as e:
-            print(f"❌ Erro de conexão: {e}")
-        
-        time.sleep(20)
+threading.Thread(target=run_server, daemon=True).start()
 
-# Inicie a thread do monitoramento
-# (Lembre-se de manter o seu threading.Thread rodando)
+# Monitoramento
+URL = "https://tipminer.com/aviator"
+headers = {"User-Agent": "Mozilla/5.0"}
+
+print("🚀 Robô iniciado!")
+
+while True:
+    try:
+        response = requests.get(URL, headers=headers, timeout=15)
+        if response.status_code == 200:
+            print("✅ Site acessado com sucesso.")
+            # Aqui no log do Render, veja o que aparece:
+            # Se não aparecer os números, o site usa uma API separada.
+        else:
+            print(f"❌ Erro HTTP: {response.status_code}")
+    except Exception as e:
+        print(f"❌ Erro: {e}")
+    
+    time.sleep(30)
