@@ -5,11 +5,9 @@ import threading
 import telebot
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-# --- CONFIGURAÇÕES ---
+# Configurações do Bot
 TOKEN = "8952208320:AAFRmo8v5xk7GlnPm8qTd7WzQQPAnE2Y6QI"
-# Se for enviar para um canal, coloque o @ do canal. 
-# Se for para você mesmo, coloque seu ID numérico.
-CHAT_ID = "@Analistawt_bot" 
+CHAT_ID = "@Analistawt_bot"
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -35,11 +33,9 @@ while True:
     try:
         response = requests.get(URL, headers=headers, timeout=15)
         if response.status_code == 200:
-            bot.send_message(CHAT_ID, "✅ O bot esta monitorando o site normalmente.")
+            bot.send_message(CHAT_ID, "✅ Bot monitorando.")
         else:
-            bot.send_message(CHAT_ID, f"❌ Erro ao acessar o site: {response.status_code}")
+            bot.send_message(CHAT_ID, f"❌ Erro: {response.status_code}")
     except Exception as e:
-        print(f"❌ Error: {e}")
-    
-    # Pausa de 60 segundos
+        print(f"❌ Erro: {e}")
     time.sleep(60)
