@@ -19,16 +19,16 @@ threading.Thread(target=run_server, daemon=True).start()
 URL = "https://tipminer.com/aviator"
 headers = {"User-Agent": "Mozilla/5.0"}
 
-print("🚀 Robô iniciado!")
+print("🚀 Bot started!")
 
 while True:
     try:
         response = requests.get(URL, headers=headers, timeout=15)
         if response.status_code == 200:
-            print("✅ Site acessado com sucesso.")
+            print("✅ Successfully accessed the site.")
         else:
-            print(f"❌ Erro HTTP: {response.status_code}")
+            print(f"❌ HTTP Error: {response.status_code}")
     except Exception as e:
-        print(f"❌ Erro: {e}")
+        print(f"❌ Error: {e}")
     
     time.sleep(30)
