@@ -10,7 +10,7 @@ CHAT_ID = "5805588750"
 
 bot = telebot.TeleBot(TOKEN)
 
-# Servidor para manter o Render online
+# Mantém o Render acordado
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -25,21 +25,23 @@ def run_server():
 threading.Thread(target=run_server, daemon=True).start()
 
 scraper = cloudscraper.create_scraper()
+URL = "https://sorte.blackaviator.app/"
 
-# Vamos tentar acessar uma rota comum de API que esses sites usam
-# Muitas vezes os sinais ficam em /api/signals ou /api/data
-URL_API = "https://sorte.blackaviator.app/api/signals"
-
-print("🚀 Buscando sinais na API...")
+print("🚀 Bot iniciado em modo de varredura profunda...")
 
 while True:
     try:
-        response = scraper.get(URL_API, timeout=10)
-        if response.status_code == 200:
-            bot.send_message(CHAT_ID, f"🔍 API respondeu: {response.text[:500]}")
+        # Acessa a página principal
+        response = scraper.get(URL, timeout=15)
+        
+        # Procura por palavras-chave comuns em sinais
+        if "entrada" in response.text.lower() or "sinal" in response.text.lower() or "confirmado" in response.text.lower():
+            bot.send_message(CHAT_ID, "✅ SINAL DETECTADO! O conteúdo contém palavras de entrada.")
         else:
-            bot.send_message(CHAT_ID, f"⚠️ A página principal carrega, mas a API retornou erro: {response.status_code}")
+            # Envia um pedaço maior do conteúdo para eu ver se os dados aparecem em JSON escondido
+            bot.send_message(CHAT_ID, f"🔍 Varredura: {response.text[2000:2500]}")
+            
     except Exception as e:
-        bot.send_message(CHAT_ID, f"❌ Erro na busca: {str(e)[:50]}")
+        print(f"Erro: {e}")
     
-    time.sleep(60)
+    time.sleep(120)
