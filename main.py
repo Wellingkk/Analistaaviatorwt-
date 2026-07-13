@@ -1,4 +1,4 @@
-import requests
+import cloudscraper
 import time
 import os
 import threading
@@ -10,7 +10,6 @@ CHAT_ID = "5805588750"
 
 bot = telebot.TeleBot(TOKEN)
 
-# Servidor simples para manter o bot online no Render
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -24,23 +23,21 @@ def run_server():
 
 threading.Thread(target=run_server, daemon=True).start()
 
+# Configuração do scraper que simula um navegador real
+scraper = cloudscraper.create_scraper()
 URL = "https://tipminer.com/aviator"
 
-# Cabeçalho simulando um navegador Chrome real para evitar o erro 403
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
-}
-
-print("🚀 Bot started!")
+print("🚀 Bot iniciado com Cloudscraper!")
 
 while True:
     try:
-        response = requests.get(URL, headers=headers, timeout=15)
+        response = scraper.get(URL, timeout=15)
         if response.status_code == 200:
-            bot.send_message(CHAT_ID, "✅ Site acessado com sucesso!")
+            bot.send_message(CHAT_ID, "✅ Site acessado com sucesso via Cloudscraper!")
         else:
             bot.send_message(CHAT_ID, f"❌ Erro ao acessar: {response.status_code}")
     except Exception as e:
         print(f"❌ Erro: {e}")
+        bot.send_message(CHAT_ID, f"❌ Erro no bot: {str(e)[:50]}")
     
     time.sleep(60)
