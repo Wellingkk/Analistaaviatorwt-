@@ -6,8 +6,10 @@ import telebot
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 # --- CONFIGURAÇÕES ---
-TOKEN = "SEU_TOKEN_DO_BOT_AQUI" 
-CHAT_ID = "@seu_canal_ou_id" 
+TOKEN = "8952208320:AAFRmo8v5xk7GlnPm8qTd7WzQQPAnE2Y6QI"
+# Se for enviar para um canal, coloque o @ do canal. 
+# Se for para você mesmo, coloque seu ID numérico.
+CHAT_ID = "@Analistawt_bot" 
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -38,6 +40,6 @@ while True:
             bot.send_message(CHAT_ID, f"❌ Erro ao acessar o site: {response.status_code}")
     except Exception as e:
         print(f"❌ Error: {e}")
-        # Evita spam de mensagens de erro no Telegram
     
+    # Pausa de 60 segundos
     time.sleep(60)
